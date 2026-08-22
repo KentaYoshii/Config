@@ -1,0 +1,3 @@
+[submodule "karabiner"]
+	path = karabiner
+	url = https://github.com/KentaYoshii/karabiner.git
