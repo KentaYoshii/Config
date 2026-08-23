@@ -33,6 +33,10 @@ Plug('numToStr/Comment.nvim')
 Plug('lewis6991/gitsigns.nvim')
 -- 10. Git lifecycle
 Plug('tpope/vim-fugitive') 
+-- 11. Focus 
+Plug('folke/twilight.nvim')
+
+
 Plug('ibhagwan/fzf-lua') --fuzzy finder and grep
 Plug('mfussenegger/nvim-lint') --async linter
 Plug('MeanderingProgrammer/render-markdown.nvim') --render md inline
@@ -47,11 +51,12 @@ require('config.keymaps')
 
 require('plugins.colorscheme')
 require('plugins.lualine')
--- require('plugins.which-key')
+-- require('plugins.which-key') disabled bc it is a little annoying
 require('plugins.nvim-tree')
 require('plugins.autopairs')
 require('plugins.comment')
 require('plugins.gitsigns')
+require('plugins.twilight')
 
 
 -- TOOD:
