@@ -34,7 +34,6 @@ map('n', '<leader>bn', '<Cmd>BufferOrderByName<CR>')
 -- nvim-tree
 map('n', '<leader>t', '<Cmd>NvimTreeToggle<CR>') 
 
-
 -- Own augroup, named after this module. An ungrouped autocmd is added again on
 -- every re-source rather than replaced, so the copies accumulate; 'clear = true'
 -- makes re-running this file idempotent. The name must be unique per module --

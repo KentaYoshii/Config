@@ -20,8 +20,8 @@ Plug('romgrk/barbar.nvim') --bufferline
 Plug('nvim-tree/nvim-tree.lua') --file explorer
 Plug('windwp/nvim-autopairs') --autopairs 
 Plug('numToStr/Comment.nvim') --easier comments
-
 Plug('lewis6991/gitsigns.nvim') --git
+
 Plug('ibhagwan/fzf-lua') --fuzzy finder and grep
 Plug('mfussenegger/nvim-lint') --async linter
 Plug('MeanderingProgrammer/render-markdown.nvim') --render md inline
@@ -40,6 +40,8 @@ require('plugins.which-key')
 require('plugins.nvim-tree')
 require('plugins.autopairs')
 require('plugins.comment')
+require('plugins.gitsigns')
+
 
 -- TOOD:
 -- nvim-lint
