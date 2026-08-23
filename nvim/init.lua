@@ -37,13 +37,14 @@ Plug('tpope/vim-fugitive')
 Plug('folke/twilight.nvim')
 -- 12. Treesitter
 Plug('nvim-treesitter/nvim-treesitter')
+-- 13. fzf-lua for greps
+Plug('ibhagwan/fzf-lua') 
 
 
 -- Nice to haves (but not desperately needed rignt now)
 -- nvim-treesitter-textobjects
 -- nvim-treesitter-context
 
-Plug('ibhagwan/fzf-lua') --fuzzy finder and grep
 Plug('mfussenegger/nvim-lint') --async linter
 Plug('MeanderingProgrammer/render-markdown.nvim') --render md inline
 Plug('neovim/nvim-lspconfig') --lsp config
@@ -64,7 +65,7 @@ require('plugins.autopairs')
 require('plugins.comment')
 require('plugins.gitsigns')
 require('plugins.twilight')
-
+require('plugins.fzf-lua')
 
 -- TOOD:
 -- nvim-lint

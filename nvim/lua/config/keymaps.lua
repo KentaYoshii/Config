@@ -40,6 +40,22 @@ map('n', '<leader>t', '<Cmd>NvimTreeToggle<CR>')
 -- za (Toggle fold)
 -- Uppercase second char for FULL fold/open
 
+
+-- fzf-lua (https://github.com/ibhagwan/fzf-lua)
+map("n", "<leader>ff", "<Cmd>lua require('fzf-lua').files()<CR>") --search cwd
+map("n", "<leader>fF", "<Cmd>lua require('fzf-lua').files({ cwd = '~/' })<CR>") --search home
+map("n", "<leader>fr", "<Cmd>lua require('fzf-lua').resume()<CR>") --last search
+map("n", "<leader>fg", "<Cmd>lua require('fzf-lua').grep()<CR>") --grep
+map("n", "<leader>fw", "<Cmd>lua require('fzf-lua').grep_cword()<CR>") --grep word under cursor
+map("n", "<leader>fb", "<Cmd>lua require('fzf-lua').blines()<CR>") --grep current buffer lines
+map('n', "<leader>fm", "<Cmd>lua require('fzf-lua').helptags()<CR>") -- grep help tags
+map('n', "<leader>fc", "<Cmd>lua require('fzf-lua').commands()<CR>") -- grep commands 
+map('n', "<leader>fC", "<Cmd>lua require('fzf-lua').command_history()<CR>") -- grep command history
+map('n', "<leader>ft", "<Cmd>lua require('fzf-lua').btags()<CR>") -- grep tags (buffer)
+map('n', "<leader>fT", "<Cmd>lua require('fzf-lua').tags()<CR>") -- grep tags 
+map('n', "<leader>fgC", "<Cmd>lua require('fzf-lua').git_commits()<CR>") -- grep commits 
+map('n', "<leader>fgc", "<Cmd>lua require('fzf-lua').git_bcommits()<CR>") -- grep commits (buffer) 
+
 -- twilight
 map('n', '<leader>f', '<Cmd>Twilight<CR>')
 
