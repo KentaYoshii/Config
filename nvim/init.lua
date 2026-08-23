@@ -38,6 +38,11 @@ Plug('folke/twilight.nvim')
 -- 12. Treesitter
 Plug('nvim-treesitter/nvim-treesitter')
 
+
+-- Nice to haves (but not desperately needed rignt now)
+-- nvim-treesitter-textobjects
+-- nvim-treesitter-context
+
 Plug('ibhagwan/fzf-lua') --fuzzy finder and grep
 Plug('mfussenegger/nvim-lint') --async linter
 Plug('MeanderingProgrammer/render-markdown.nvim') --render md inline

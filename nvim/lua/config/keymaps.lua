@@ -34,6 +34,12 @@ map('n', '<leader>bn', '<Cmd>BufferOrderByName<CR>')
 -- nvim-tree
 map('n', '<leader>t', '<Cmd>NvimTreeToggle<CR>') 
 
+-- nvim-treesitter
+-- zc (Fold)
+-- zo (Open fold)
+-- za (Toggle fold)
+-- Uppercase second char for FULL fold/open
+
 -- twilight
 map('n', '<leader>f', '<Cmd>Twilight<CR>')
 
