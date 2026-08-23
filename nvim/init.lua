@@ -21,6 +21,7 @@ Plug('nvim-tree/nvim-tree.lua') --file explorer
 Plug('windwp/nvim-autopairs') --autopairs 
 Plug('numToStr/Comment.nvim') --easier comments
 Plug('lewis6991/gitsigns.nvim') --git
+Plug('tpope/vim-fugitive') --git
 
 Plug('ibhagwan/fzf-lua') --fuzzy finder and grep
 Plug('mfussenegger/nvim-lint') --async linter
