@@ -12,17 +12,27 @@ vim.g.loaded_netrwPlugin = 1
 -- Plugins 
 vim.call('plug#begin') -- #BEGIN
 
-Plug('catppuccin/nvim', { ['as'] = 'catppuccin' }) --colorscheme
-Plug('nvim-tree/nvim-web-devicons') --pretty icons
-Plug('nvim-lualine/lualine.nvim') --statusline
-Plug('folke/which-key.nvim') --mappings popup
-Plug('romgrk/barbar.nvim') --bufferline
-Plug('nvim-tree/nvim-tree.lua') --file explorer
-Plug('windwp/nvim-autopairs') --autopairs 
-Plug('numToStr/Comment.nvim') --easier comments
-Plug('lewis6991/gitsigns.nvim') --git
-Plug('tpope/vim-fugitive') --git
-
+-- Common Stuff
+-- 1. Color Scheme
+Plug('catppuccin/nvim', { ['as'] = 'catppuccin' }) 
+-- 2. Icons
+Plug('nvim-tree/nvim-web-devicons') 
+-- 3. Status Line Bar
+Plug('nvim-lualine/lualine.nvim') 
+-- 4. Mappings popup menu
+-- Plug('folke/which-key.nvim') 
+-- 5. Buffers tab bar
+Plug('romgrk/barbar.nvim') 
+-- 6. File Tree
+Plug('nvim-tree/nvim-tree.lua') 
+-- 7. Auto pairings
+Plug('windwp/nvim-autopairs') 
+-- 8. Commenting
+Plug('numToStr/Comment.nvim') 
+-- 9. Git signs / blames / hunks
+Plug('lewis6991/gitsigns.nvim')
+-- 10. Git lifecycle
+Plug('tpope/vim-fugitive') 
 Plug('ibhagwan/fzf-lua') --fuzzy finder and grep
 Plug('mfussenegger/nvim-lint') --async linter
 Plug('MeanderingProgrammer/render-markdown.nvim') --render md inline
@@ -37,7 +47,7 @@ require('config.keymaps')
 
 require('plugins.colorscheme')
 require('plugins.lualine')
-require('plugins.which-key')
+-- require('plugins.which-key')
 require('plugins.nvim-tree')
 require('plugins.autopairs')
 require('plugins.comment')
