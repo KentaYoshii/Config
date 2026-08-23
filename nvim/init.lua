@@ -35,7 +35,8 @@ Plug('lewis6991/gitsigns.nvim')
 Plug('tpope/vim-fugitive') 
 -- 11. Focus 
 Plug('folke/twilight.nvim')
-
+-- 12. Treesitter
+Plug('nvim-treesitter/nvim-treesitter')
 
 Plug('ibhagwan/fzf-lua') --fuzzy finder and grep
 Plug('mfussenegger/nvim-lint') --async linter
@@ -49,6 +50,7 @@ require('config.options')
 -- Key Maps
 require('config.keymaps')
 
+require('plugins.nvim-treesitter')
 require('plugins.colorscheme')
 require('plugins.lualine')
 -- require('plugins.which-key') disabled bc it is a little annoying
