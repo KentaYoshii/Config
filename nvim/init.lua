@@ -66,21 +66,36 @@ require('config.options')
 -- Key Maps
 require('config.keymaps')
 
-require('plugins.nvim-treesitter')
-require('plugins.colorscheme')
-require('plugins.lualine')
--- require('plugins.which-key') disabled bc it is a little annoying
-require('plugins.nvim-tree')
-require('plugins.autopairs')
-require('plugins.comment')
-require('plugins.gitsigns')
-require('plugins.twilight')
-require('plugins.fzf-lua')
-require('plugins.completion')
+-- Plugin modules load through this rather than a bare `require`: before
+-- :PlugInstall has run, the plugin is not on the runtimepath, `require` throws,
+-- and that aborts the rest of this file -- so one uninstalled plugin takes out
+-- every configuration below it. Report the failure and carry on instead.
+-- Scheduled so the message lands after startup rather than scrolling past.
+local function setup(module)
+  local ok, err = pcall(require, module)
+  if not ok then
+    vim.schedule(function()
+      vim.notify(('%s failed to load (run :PlugInstall?)\n%s'):format(module, err),
+        vim.log.levels.WARN)
+    end)
+  end
+end
+
+setup('plugins.nvim-treesitter')
+setup('plugins.colorscheme')
+setup('plugins.lualine')
+-- setup('plugins.which-key') disabled bc it is a little annoying
+setup('plugins.nvim-tree')
+setup('plugins.autopairs')
+setup('plugins.comment')
+setup('plugins.gitsigns')
+setup('plugins.twilight')
+setup('plugins.fzf-lua')
+setup('plugins.completion')
 
 -- LSP. Per-language setup lives in lua/lsp/ and is invoked from ftplugin/<ft>.lua;
 -- only the user commands need loading up front.
-require('lsp.commands')
+setup('lsp.commands')
 
 -- TOOD:
 -- nvim-lint
