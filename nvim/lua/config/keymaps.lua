@@ -57,7 +57,11 @@ map('n', "<leader>fgC", "<Cmd>lua require('fzf-lua').git_commits()<CR>") -- grep
 map('n', "<leader>fgc", "<Cmd>lua require('fzf-lua').git_bcommits()<CR>") -- grep commits (buffer) 
 
 -- twilight
-map('n', '<leader>f', '<Cmd>Twilight<CR>')
+-- Not '<leader>f': that is a prefix of the fzf-lua maps above and of the
+-- buffer-local '<leader>fo'/'<leader>fO' in lsp/common.lua, and a short mapping
+-- which is also a prefix of longer ones leaves Vim waiting out 'timeoutlen' on
+-- every '<leader>f...' (see |map-precedence|).
+map('n', '<leader>z', '<Cmd>Twilight<CR>')
 
 -- Own augroup, named after this module. An ungrouped autocmd is added again on
 -- every re-source rather than replaced, so the copies accumulate; 'clear = true'

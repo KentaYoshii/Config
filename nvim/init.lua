@@ -38,7 +38,17 @@ Plug('folke/twilight.nvim')
 -- 12. Treesitter
 Plug('nvim-treesitter/nvim-treesitter')
 -- 13. fzf-lua for greps
-Plug('ibhagwan/fzf-lua') 
+Plug('ibhagwan/fzf-lua')
+-- 14. Completion engine + its sources
+Plug('hrsh7th/nvim-cmp')
+Plug('hrsh7th/cmp-nvim-lsp')      -- LSP completion source
+Plug('hrsh7th/cmp-buffer')        -- current-buffer words
+Plug('hrsh7th/cmp-path')          -- filesystem paths
+Plug('L3MON4D3/LuaSnip')          -- snippet engine (jdt.ls emits snippets)
+Plug('saadparwaiz1/cmp_luasnip')
+-- 15. Java: jdt.ls speaks extra protocol on top of standard LSP, which this
+-- wraps. Configured in lua/lsp/java.lua, started from ftplugin/java.lua.
+Plug('mfussenegger/nvim-jdtls')
 
 
 -- Nice to haves (but not desperately needed rignt now)
@@ -47,7 +57,7 @@ Plug('ibhagwan/fzf-lua')
 
 Plug('mfussenegger/nvim-lint') --async linter
 Plug('MeanderingProgrammer/render-markdown.nvim') --render md inline
-Plug('neovim/nvim-lspconfig') --lsp config
+Plug('neovim/nvim-lspconfig') --lsp config (unused by Java; for future servers)
 
 vim.call('plug#end') -- #END
 
@@ -66,7 +76,11 @@ require('plugins.comment')
 require('plugins.gitsigns')
 require('plugins.twilight')
 require('plugins.fzf-lua')
+require('plugins.completion')
+
+-- LSP. Per-language setup lives in lua/lsp/ and is invoked from ftplugin/<ft>.lua;
+-- only the user commands need loading up front.
+require('lsp.commands')
 
 -- TOOD:
 -- nvim-lint
--- nvim-lspconfig
