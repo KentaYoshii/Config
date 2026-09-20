@@ -207,6 +207,50 @@ local function mac_runtimes()
   return runtimes
 end
 
+local function detect_first(paths, is_dir)
+  for _, p in ipairs(paths) do
+    local ok = is_dir and vim.fn.isdirectory(p) == 1 or vim.fn.filereadable(p) == 1
+    if ok then return p end
+  end
+  return nil
+end
+
+-- Maven configuration. Bloomberg-internal projects (e.g. wingman) ship their
+-- own setup/settings.xml pointing at the Bloomberg artifactory mirror, and
+-- often build into a project-local repository, but jdt.ls's embedded Maven
+-- defaults to ~/.m2/settings.xml regardless -- which on a personal machine is
+-- either absent or plain Maven Central, and cannot resolve com.bloomberg.*
+-- artifacts or internally-hosted plugins. Detect the project's own settings +
+-- local repo and feed them to jdt.ls via a generated settings file (mirror
+-- taken from the project as-is, localRepository injected so already-built
+-- jars are reused). Personal, non-Bloomberg projects have none of these paths
+-- and fall through unchanged to jdt.ls's default ~/.m2/settings.xml.
+local function maven_user_settings(root_dir, workspace_dir)
+  local project_settings = detect_first({
+    root_dir .. '/setup/settings.xml',
+    root_dir .. '/.mvn/settings.xml',
+    root_dir .. '/settings.xml',
+  }, false)
+  local local_repo = detect_first({
+    root_dir .. '/m2',
+    root_dir .. '/.m2/repository',
+    root_dir .. '/.m2',
+  }, true)
+
+  if not (project_settings and local_repo) then
+    return project_settings
+  end
+
+  local content = table.concat(vim.fn.readfile(project_settings), '\n')
+  if not content:find('<localRepository>', 1, true) then
+    content = content:gsub('(<settings[^>]*>)',
+      '%1\n  <localRepository>' .. local_repo .. '</localRepository>', 1)
+  end
+  local generated = workspace_dir .. '/jdtls-settings.xml'
+  vim.fn.writefile(vim.split(content, '\n'), generated)
+  return generated
+end
+
 function M.start()
   local ok_jdtls, jdtls = pcall(require, 'jdtls')
   if not ok_jdtls then
@@ -237,6 +281,8 @@ function M.start()
     return
   end
 
+  local user_settings = maven_user_settings(root_dir, workspace_dir)
+
   jdtls.start_or_attach({
     cmd = cmd,
     root_dir = root_dir,
@@ -248,6 +294,7 @@ function M.start()
         contentProvider = { preferred = 'fernflower' },  -- decompile .class files
         configuration = {
           updateBuildConfiguration = 'automatic',
+          maven = { userSettings = user_settings, globalSettings = user_settings },
           runtimes = mac_runtimes(),
         },
         import = {
