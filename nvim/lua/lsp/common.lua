@@ -84,9 +84,8 @@ end
 --
 -- opts.force       passed to vim.lsp.stop_client. jdt.ls needs a force-kill.
 -- opts.tries       how many 250ms polls to wait before giving up and reloading.
--- opts.after_stop  called once the stops have been issued, before the wait.
---                  :JdtWipe deletes the Eclipse workspace here, so the deletion
---                  cannot race a server that is still writing to it.
+-- opts.after_stop  called once the clients are confirmed gone (see when_gone
+--                  below). :JdtWipe deletes the Eclipse workspace here.
 -- opts.label       name used in the restart notification, where the client name
 --                  is not what the user calls the server ('jdtls' / 'jdt.ls').
 function M.restart_clients(name, filetypes, opts)
@@ -97,28 +96,41 @@ function M.restart_clients(name, filetypes, opts)
     pcall(vim.lsp.stop_client, client.id, opts.force or false)
   end
 
-  if opts.after_stop then
-    opts.after_stop()
-  end
-
   local wanted = {}
   for _, ft in ipairs(filetypes) do wanted[ft] = true end
 
   local tries = 0
   local function when_gone()
     if #vim.lsp.get_clients({ name = name }) == 0 or tries > max_tries then
-      -- Reload the buffers explicitly rather than issuing a bare ':edit', so an
-      -- unnamed focused buffer cannot fail this deferred callback with E32.
-      for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-        if vim.api.nvim_buf_is_loaded(buf)
-          and wanted[vim.bo[buf].filetype]
-          and vim.api.nvim_buf_get_name(buf) ~= '' then
-          -- Clear the guard so on_attach re-maps after the reload.
-          vim.b[buf].lsp_keymaps_set = nil
-          vim.api.nvim_buf_call(buf, function() vim.cmd('edit') end)
+      -- vim.lsp.get_clients() emptying out means Neovim has torn down its
+      -- client object, not that the jdt.ls JVM has actually exited and
+      -- released the workspace directory -- stop_client only requests the
+      -- stop. after_stop (:JdtWipe's directory delete) used to run before
+      -- this wait even started, racing a JVM still shutting down: it could
+      -- recreate files under the directory being deleted, and Eclipse's own
+      -- crash-recovery ("workspace exited with unsaved changes... refreshing
+      -- workspace to recover changes") would then restore the very state the
+      -- wipe was meant to clear. Deferring after_stop() to here closes most
+      -- of that race; the extra 300ms below covers the remaining gap between
+      -- the client object disappearing and the OS process actually exiting.
+      vim.defer_fn(function()
+        if opts.after_stop then
+          opts.after_stop()
         end
-      end
-      vim.notify((opts.label or name) .. ': restarting…')
+        -- Reload the buffers explicitly rather than issuing a bare ':edit',
+        -- so an unnamed focused buffer cannot fail this deferred callback
+        -- with E32.
+        for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+          if vim.api.nvim_buf_is_loaded(buf)
+            and wanted[vim.bo[buf].filetype]
+            and vim.api.nvim_buf_get_name(buf) ~= '' then
+            -- Clear the guard so on_attach re-maps after the reload.
+            vim.b[buf].lsp_keymaps_set = nil
+            vim.api.nvim_buf_call(buf, function() vim.cmd('edit') end)
+          end
+        end
+        vim.notify((opts.label or name) .. ': restarting…')
+      end, 300)
     else
       tries = tries + 1
       vim.defer_fn(when_gone, 250)
