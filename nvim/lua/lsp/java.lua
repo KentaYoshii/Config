@@ -100,6 +100,33 @@ local function find_install_dir()
   return nil
 end
 
+-- Java ignores HTTP(S)_PROXY, so translate the shell's proxy into JVM system
+-- properties. Without them jdt.ls cannot fetch the published Gradle wrapper
+-- checksums from services.gradle.org and rejects every wrapper as untrusted.
+-- NO_PROXY hosts stay direct; Java wants `*.example.com|host` rather than the
+-- env's `.example.com,host`, and has no CIDR syntax, so those entries drop.
+local function proxy_jvm_args()
+  local url = vim.env.HTTPS_PROXY or vim.env.https_proxy
+  local host, port = (url or ''):match('^%a+://([^:/]+):(%d+)')
+  if not host then
+    return {}
+  end
+  local args = {
+    '-Dhttp.proxyHost=' .. host, '-Dhttp.proxyPort=' .. port,
+    '-Dhttps.proxyHost=' .. host, '-Dhttps.proxyPort=' .. port,
+  }
+  local direct = {}
+  for entry in (vim.env.NO_PROXY or vim.env.no_proxy or ''):gmatch('[^,%s]+') do
+    if not entry:find('/') then
+      table.insert(direct, (entry:gsub('^%.', '*.')))
+    end
+  end
+  if #direct > 0 then
+    table.insert(args, '-Dhttp.nonProxyHosts=' .. table.concat(direct, '|'))
+  end
+  return args
+end
+
 -- Build the launch command, or nil if no server is installed. The equinox
 -- config directory is platform-specific: Apple Silicon ships config_mac_arm,
 -- Intel config_mac.
@@ -109,6 +136,9 @@ local function build_cmd(workspace_dir, lombok_jar)
     local cmd = { wrapper, '-data', workspace_dir }
     if lombok_jar then
       table.insert(cmd, '--jvm-arg=-javaagent:' .. lombok_jar)
+    end
+    for _, arg in ipairs(proxy_jvm_args()) do
+      table.insert(cmd, '--jvm-arg=' .. arg)
     end
     return cmd
   end
@@ -134,6 +164,7 @@ local function build_cmd(workspace_dir, lombok_jar)
   if lombok_jar then
     table.insert(cmd, '-javaagent:' .. lombok_jar)
   end
+  vim.list_extend(cmd, proxy_jvm_args())
   vim.list_extend(cmd, {
     '-Declipse.application=org.eclipse.jdt.ls.core.id1',
     '-Dosgi.bundles.defaultStartLevel=4',
@@ -299,6 +330,18 @@ function M.start()
         },
         import = {
           maven = { enabled = true },
+        },
+        imports = {
+          gradle = {
+            wrapper = {
+              -- Wrappers verified against services.gradle.org checksums, so
+              -- imports still work when the published list is unreachable.
+              checksums = {
+                -- gradle-9.8.2-wrapper.jar (dmp-java)
+                { sha256 = '3b8a25775a69158b5ad2b1d17a80a88dc7b40a352a73eb27d06c612a7ce68e98', allowed = true },
+              },
+            },
+          },
         },
         maven = {
           -- Source jars give real javadoc on hover and real source on `gd` into
