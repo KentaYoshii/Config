@@ -1,0 +1,82 @@
+# AeroSpace: tiling windows and workspaces.
+# Keyboard shortcuts live in Karabiner (~/Config/karabiner, Caps Lock = Hyper), which runs `aerospace` commands:
+#   Hyper + h/j/k/l        focus window        Hyper + 1-6        go to workspace
+#   Hyper + Tab            previous workspace
+#   Hyper+W h/j/k/l        move window         Hyper+W 1-6        send window to workspace
+#   Hyper+W f              fullscreen          Hyper+W y/o        move to previous/next monitor
+#   Hyper+W t / a          tiles / accordion   Hyper+W space      float / tile
+#   Hyper+W e              equalize sizes      Hyper+W r          resize mode (h/j/k/l, esc to finish)
+# Nothing is bound to ⌥ here, so Option keeps working in Ghostty, Neovim, and for typing accents.
+
+config-version = 2
+start-at-login = true
+
+enable-normalization-flatten-containers = true
+enable-normalization-opposite-orientation-for-nested-containers = true
+accordion-padding = 30
+default-root-container-layout = 'tiles'
+default-root-container-orientation = 'auto'
+on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+automatically-unhide-macos-hidden-apps = false
+
+[key-mapping]
+preset = 'qwerty'
+
+[gaps]
+inner.horizontal = 8
+inner.vertical = 8
+outer.left = 8
+outer.bottom = 8
+outer.top = 8
+outer.right = 8
+
+# No shortcuts in the main mode: Karabiner owns the keyboard.
+[mode.main.binding]
+
+[mode.resize.binding]
+h = 'resize width -50'
+l = 'resize width +50'
+j = 'resize height +50'
+k = 'resize height -50'
+e = 'balance-sizes'
+esc = 'mode main'
+enter = 'mode main'
+
+# Workspaces: 1 terminal, 2 browser, 3 code, 4 chat, 5 meetings, 6 notes.
+[[on-window-detected]]
+if.app-id = 'com.mitchellh.ghostty'
+run = 'move-node-to-workspace 1'
+
+[[on-window-detected]]
+if.app-id = 'com.google.Chrome'
+run = 'move-node-to-workspace 2'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.Safari'
+run = 'move-node-to-workspace 2'
+
+# Zoom opens toolbars and popups that don't tile well.
+[[on-window-detected]]
+if.app-id = 'us.zoom.xos'
+run = ['layout floating', 'move-node-to-workspace 5']
+
+[[on-window-detected]]
+if.app-id = 'com.apple.iCal'
+run = 'move-node-to-workspace 5'
+
+[[on-window-detected]]
+if.app-id = 'md.obsidian'
+run = 'move-node-to-workspace 6'
+
+# Small utility windows float wherever they open.
+[[on-window-detected]]
+if.app-id = 'com.bloomberg.bbvpn2'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.systempreferences'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.bloomberg.calendarutil'
+run = 'layout floating'
